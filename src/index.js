@@ -9,6 +9,8 @@ import {
 } from 'react-native'
 import PropTypes from 'prop-types'
 
+const SEC_TO_MS = 1000;
+
 // compatability for react-native versions < 0.44
 const ViewPropTypesStyle = ViewPropTypes
   ? ViewPropTypes.style
@@ -69,10 +71,13 @@ function calcInterpolationValuesForHalfCircle2(
 
 function getInitialState(props) {
   const circleProgress = new Animated.Value(0)
+  const textProgress = new Animated.Value(0)
+
   return {
     circleProgress,
     secondsElapsed: 0,
     text: props.updateText(0, props.seconds),
+    textProgress,
     interpolationValuesHalfCircle1: calcInterpolationValuesForHalfCircle1(
       circleProgress,
       props,
@@ -117,6 +122,7 @@ export default class PercentageCircle extends React.PureComponent {
 
     this.state = getInitialState(props)
     this.restartAnimation()
+    this.restartAnimationCircle()
   }
 
   componentWillReceiveProps(nextProps) {
@@ -124,7 +130,8 @@ export default class PercentageCircle extends React.PureComponent {
       this.props.seconds !== nextProps.seconds
     ) {
       this.state.circleProgress.stopAnimation()
-      this.setState(getInitialState(nextProps), this.restartAnimation)
+      this.state.textProgress.stopAnimation()
+      this.setState(getInitialState(nextProps), this.restartAnimation, this.restartAnimationCircle)
     }
   }
 
@@ -140,23 +147,25 @@ export default class PercentageCircle extends React.PureComponent {
       secondsElapsed,
       this.props.seconds,
     )
-    this.setState(
-      {
-        ...getInitialState(this.props),
-        secondsElapsed,
-        text: updatedText,
-      },
-      callback,
-    )
+    this.setState({secondsElapsed, text: updatedText }, callback )
   };
 
   restartAnimation = () => {
-    this.state.circleProgress.stopAnimation()
-    Animated.timing(this.state.circleProgress, {
+    this.state.textProgress.stopAnimation()
+    Animated.timing(this.state.textProgress, {
       toValue: 100,
       duration: 1000,
       easing: Easing.linear,
     }).start(this.onCircleAnimated)
+  };
+
+  restartAnimationCircle = () => {
+    this.state.circleProgress.stopAnimation()
+    Animated.timing(this.state.circleProgress, {
+      toValue: 100,
+      duration: this.props.seconds * SEC_TO_MS,
+      easing: Easing.linear,
+    }).start()
   };
 
   renderHalfCircle({ rotate, backgroundColor }) {
