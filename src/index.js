@@ -163,7 +163,7 @@ export default class PercentageCircle extends React.PureComponent {
     this.state.circleProgress.stopAnimation()
     Animated.timing(this.state.circleProgress, {
       toValue: 100,
-      duration: this.props.seconds * SEC_TO_MS,
+      duration: (this.props.seconds + 1) * SEC_TO_MS,
       easing: Easing.linear,
     }).start()
   };
