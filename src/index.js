@@ -101,6 +101,7 @@ export default class PercentageCircle extends React.PureComponent {
     textStyle: Text.propTypes.style,
     updateText: PropTypes.func,
     onTimeElapsed: PropTypes.func,
+    showText: PropTypes.bool,
   };
 
   static defaultProps = {
@@ -115,6 +116,7 @@ export default class PercentageCircle extends React.PureComponent {
     onTimeElapsed: () => null,
     updateText: (elapsedSeconds, totalSeconds) =>
       (totalSeconds - elapsedSeconds).toString(),
+    showText: true,
   };
 
   constructor(props) {
@@ -216,9 +218,11 @@ export default class PercentageCircle extends React.PureComponent {
           },
         ]}
       >
+      {this.props.showText &&
         <Text style={this.props.textStyle}>
           {this.state.text}
         </Text>
+      }
       </View>
     )
   }
