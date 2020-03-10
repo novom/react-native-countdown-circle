@@ -127,13 +127,16 @@ export default class PercentageCircle extends React.PureComponent {
     this.restartAnimationCircle()
   }
 
-  componentWillReceiveProps(nextProps) {
+  componentDidUpdate(prevProps) {
     if (
-      this.props.seconds !== nextProps.seconds
+      prevProps.seconds !== this.props.seconds
     ) {
       this.state.circleProgress.stopAnimation()
       this.state.textProgress.stopAnimation()
-      this.setState(getInitialState(nextProps), this.restartAnimation, this.restartAnimationCircle)
+      this.setState(
+        getInitialState(this.props),
+        () => { this.restartAnimation(); this.restartAnimationCircle() }
+      )
     }
   }
 
